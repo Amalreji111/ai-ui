@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pizza Order</title>
+
+    <!-- LOCAL -->
+    <!-- <script
+      data-pap-id="access-point-1723587253991-ff3eef0f-6a7f-415f-943a-a5fc81d0d3b4"
+      type="module"
+      crossorigin
+      src="src/index.ts"
+      data-homebase-url="http://localhost:8787"
+    ></script> -->
+
+    <!-- STAGING -->
+    <!-- <script
+      data-pap-id="access-point-1723591759636-0fe96e8b-cf12-4fb0-9a48-cfafcadf86e1"
+      type="module"
+      crossorigin
+      src="https://ai-thing.pages.dev/assets/main-BTieZgDY.js"
+      data-homebase-url="https://ai-worker.mjtdev.workers.dev"
+    ></script> -->
+
+    <!-- PROD -->
+    <script
+      data-pap-id="access-point-1723591970176-b702a779-664d-47e1-9282-59ac12cbad73"
+      type="module"
+      crossorigin
+      src="https://ai-workforce.intelligage.net/assets/main-DA9GCagc.js "
+      data-homebase-url="https://ai-worker.intelligage.workers.dev"
+    ></script>
+
+    <link
+      rel="stylesheet"
+      crossorigin
+      href="https://ai-thing.pages.dev/assets/main-DjNccSQj.css"
+    />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffe5b4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .container {
+        background-color: black;
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+      }
+      .video {
+        left: 4em;
+        top: 4em;
+        background-color: black;
+        color: white;
+        position: absolute;
+        padding: 20px;
+        margin-right: 5em;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+      }
+      h1 {
+        text-align: center;
+        color: #d35400;
+      }
+      label {
+        display: block;
+        margin-top: 10px;
+      }
+      select,
+      /* input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      } */
+      button {
+        background-color: #d35400;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+      }
+      button:hover {
+        background-color: #e67e22;
+      }
+      .order-summary {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: black;
+        color: white;
+      }
+    </style>
+    <script type="module" crossorigin src="/ai-ui/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+  </head>
+  <body>
+    <div class="video">
+      Video
+      <video id="video" />
+    </div>
+    <div class="container">
+      <h1>Order Your Pizza</h1>
+      <label for="size">Choose Size</label>
+      <select id="size">
+        <option value="Small">Small</option>
+        <option value="Medium">Medium</option>
+        <option value="Large">Large</option>
+      </select>
+      <label for="crust">Choose Crust</label>
+      <select id="crust">
+        <option value="Thin">Thin</option>
+        <option value="Thick">Thick</option>
+        <option value="Stuffed">Stuffed</option>
+      </select>
+      <br />
+      <br />
+      <div
+        style="border: 1px solid white; margin: 0.2em; padding: 0.5em"
+        class="cheese"
+      >
+        <label>Cheese Choices</label>
+        <label><input name="add-cheese" type="checkbox" />Add Cheese</label>
+        <label for="cheese-kind">Style of Cheese</label>
+        <input type="radio" name="cheese-kind" value="Light" />
+        Light
+        <input type="radio" name="cheese-kind" value="Normal" />
+        Normal
+        <input type="radio" name="cheese-kind" value="Extra" />
+        Extra
+
+        <label for="cheese-segment">Where to place cheese</label>
+        <input type="radio" name="cheese-segment" value="Whole" />
+        Whole
+        <input type="radio" name="cheese-segment" value="Left" />
+        Left
+        <input type="radio" name="cheese-segment" value="Right" />
+        Right
+      </div>
+      <div
+        style="border: 1px solid white; margin: 0.2em; padding: 0.5em"
+        class="toppings"
+      >
+        <label for="toppings">Choose Toppings</label>
+        <br />
+        <input type="checkbox" name="toppings" value="Pepperoni" />
+        Pepperoni
+        <input type="radio" name="pepperoni-segment" value="Whole" />
+        Whole
+        <input type="radio" name="pepperoni-segment" value="Left" />
+        Left
+        <input type="radio" name="pepperoni-segment" value="Right" />
+        Right
+
+        <br />
+        <input type="checkbox" name="toppings" value="Mushrooms" />
+        Mushrooms
+        <input type="radio" name="mushroom-segment" value="Whole" />
+        Whole
+        <input type="radio" name="mushroom-segment" value="Left" />
+        Left
+        <input type="radio" name="mushroom-segment" value="Right" />
+        Right
+        <br />
+
+        <input type="checkbox" name="toppings" value="Onions" />
+        Onions
+
+        <input type="radio" name="onions-segment" value="Whole" />
+        Whole
+        <input type="radio" name="onions-segment" value="Left" />
+        Left
+        <input type="radio" name="onions-segment" value="Right" />
+        Right
+
+        <br />
+        <input type="checkbox" name="toppings" value="Sausage" />
+        Sausage
+        <input type="radio" name="sausage-segment" value="Whole" />
+        Whole
+        <input type="radio" name="sausage-segment" value="Left" />
+        Left
+        <input type="radio" name="sausage-segment" value="Right" />
+        Right
+
+        <br />
+        <input type="checkbox" name="toppings" value="Bacon" />
+        Bacon
+        <input type="radio" name="bacon-segment" value="Whole" />
+        Whole
+        <input type="radio" name="bacon-segment" value="Left" />
+        Left
+        <input type="radio" name="bacon-segment" value="Right" />
+        Right
+        <br />
+      </div>
+      <br />
+      Special Instructions
+      <div class="order-summary" id="pizza-special"></div>
+      <button onclick="placeOrder()">Place Order</button>
+      <div class="order-summary" id="order-summary"></div>
+    </div>
+    <script>
+      function placeOrder() {
+        let size = document.getElementById("size").value;
+        let crust = document.getElementById("crust").value;
+        let toppings = [];
+        document
+          .querySelectorAll('input[type="checkbox"]:checked')
+          .forEach((checkbox) => {
+            toppings.push(checkbox.value);
+          });
+        let summary = `You have ordered a ${size} pizza with ${crust} crust and the following toppings: ${toppings.join(
+          ", "
+        )}.`;
+        document.getElementById("order-summary").innerText = summary;
+      }
+    </script>
+  </body>
+</html>
