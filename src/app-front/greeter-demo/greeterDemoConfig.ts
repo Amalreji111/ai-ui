@@ -1,7 +1,7 @@
 import { TypeBoxes } from "@mjtdev/engine";
 import type { AiplComponentContextConfig } from "../../aipl-components/AiplComponentContextState";
 
-export const pizzaDemoConfig: Partial<AiplComponentContextConfig> = {
+export const greeterDemoConfig: Partial<AiplComponentContextConfig> = {
   typeInfo: TypeBoxes.createTypeInfo((Type) => {
     return Type.Object(
       {
@@ -56,7 +56,7 @@ export const pizzaDemoConfig: Partial<AiplComponentContextConfig> = {
         ]),
         specialInstructions: Type.String(),
       },
-      { $id: "Pizza" }
+      { $id: "Greeter" }
     );
   }),
 };
