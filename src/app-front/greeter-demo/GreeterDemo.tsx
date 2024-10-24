@@ -11,6 +11,20 @@ import { useIsTtsSpeaking } from '../../tts/useIsTtsSpeaking';
 import { getTtsState } from '../../tts/TtsState';
 import { ChatTextEntry } from '../../ui/chat/entry/ChatTextEntry';
 import { useCurrentChat } from '../../ui/chat/useCurrentChat';
+import { useCustomAsrState } from '../../asr-custom/updateCustomAsrState';
+import { ChatStates } from '../../state/chat/ChatStates';
+import { AppEvents } from '../../event/AppEvents';
+import { AppTextAreaRef } from '../../ui/common/AppTextArea';
+import { startHearing } from '../../asr-webkit/startHearing';
+import { stopHearing } from '../../asr-webkit/stopHearing';
+import { AsrCustoms } from '../../asr-custom/AsrCustoms';
+import { listChatMessages } from '../../chat/listChatMessages';
+import { AppObjects } from 'ai-worker-common';
+import { isDefined } from '@mjtdev/engine';
+import { speak } from '../../tts/speak';
+import { Ttss } from '../../tts/Ttss';
+import { useAppState } from '../../state/app/AppState';
+import { interruptTts } from '../../tts/custom/interruptTts';
 // width: 100%;
 const Container = styled.div`
   height: 100%;
@@ -225,6 +239,67 @@ const IntelligageScreen: React.FC = () => {
   const { audioContext: ttsAudioContext ,currentSource} = getTtsState();
   const ttsSpeaking = useIsTtsSpeaking();
   const { chat, messages } = useCurrentChat();
+  const { ttsEnabled } = useAppState();
+
+  const {
+    speaking: asrSpeaking,
+    enabled: asrEnabled,
+  } = useCustomAsrState(); // Assuming this hook manages ASR state and controls
+
+  const [transcription, setTranscription] = useState("");
+  console.log(asrSpeaking,"AsrSpeaking..")
+  // console.log(messages,"messages..")
+  // console.log(chat,"Chat...")
+  let realAndImaginedMessages:any[]=[]
+  if(chat){
+    const orderedMessages = listChatMessages({
+      messageId: chat?.currentMessageId,
+      messages,
+    }).filter((n) => n.role !== "system");
+  
+    const speakerMessage = asrSpeaking
+      ? AppObjects.create("chat-message", {
+          characterId: chat?.userCharacterId,
+          content: {
+            type: "text",
+            parts: [],
+          },
+        })
+      : AppObjects.create("chat-message", { characterId: chat.aiCharacterId });
+      console.log("Speaker,....",speakerMessage)
+  
+     realAndImaginedMessages = [...orderedMessages, speakerMessage].filter(
+      isDefined
+    );
+  
+  }
+
+  console.log("Real Chats",realAndImaginedMessages)
+  
+
+  // Listen for ASR events and handle transcription
+  AppEvents.useEventListener(
+    "asrUtterance",
+    (evt) => {
+      console.log("asrUtterance");
+      if (!chat) {
+        console.log("NO CHAT");
+        return;
+      }
+      ChatStates.addChatMessage({ chat, text: evt.detail });
+       setTranscription("");
+    },
+    [chat]
+  );
+  AppEvents.useEventListener(
+    "asrMumble",
+    (evt) => {
+      console.log("asrMumble");
+       setTranscription(evt.detail);
+    },
+    [chat]
+  );
+
 
   useEffect(() => {
     hideLoadingScreen();
@@ -236,9 +311,14 @@ const IntelligageScreen: React.FC = () => {
      console.log("ttsSpeaking", ttsSpeaking)
     }
   }, [ttsSpeaking]);
+  if(!ttsEnabled){
+    Ttss.enableTts();
+
+  }
+
 
     
-  // AsrCustoms.startCustomAsr()
+  AsrCustoms.startCustomAsr()
 
   return (
     <Frame>
@@ -254,8 +334,9 @@ const IntelligageScreen: React.FC = () => {
         <Overlay></Overlay>
         </ImageContainer>
 
-        <TypingOverlay text="The issue you're facing with TypeScript not recognizing the image module (Ai.png) is likely related to missing type declarations for importing non-code assets like images. TypeScript doesn't know how to handle imports of non-code files" />
-        {/* <TypingOverlay text="Hey, How can I help you?" /> */}
+        {/* <TypingOverlay text="The issue you're facing with TypeScript not recognizing the image module (Ai.png) is likely related to missing type declarations for importing non-code assets like images. TypeScript doesn't know how to handle imports of non-code files" /> */}
+        <TypingOverlay text={transcription} />
+        
       </Content>
 
       <Footer>
@@ -271,10 +352,9 @@ const IntelligageScreen: React.FC = () => {
           </QRText>
         </QRContainer>
       </Footer>
-      {
+      {/* {
         chat? <ChatTextEntry chat={chat} />: null
-      }
-     
+      } */}
 
     </Container>
     </Frame>
