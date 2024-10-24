@@ -2,15 +2,15 @@ import type { Meta, StoryObj } from "@storybook/react/*";
 import type { ComponentProps } from "react";
 import { mockConfig } from "../../aipl-components/mockConfig";
 import { AiplComponentProvider } from "../../provider/AiplComponentProvider";
-import { PizzaDemo } from "./PizzaDemo";
+import { GreeterDemo } from "./GreeterDemo";
 
-type StoryProps = ComponentProps<typeof PizzaDemo> & {
+type StoryProps = ComponentProps<typeof GreeterDemo> & {
   papId: string;
   aiplHomeUrl: string;
 };
 
 const meta: Meta<StoryProps> = {
-  component: PizzaDemo,
+  component: GreeterDemo,
   tags: ["autodocs"],
   argTypes: {
     papId: { control: { type: "text" } },
@@ -25,7 +25,7 @@ export const Demo: StoryObj<StoryProps> = {
     <AiplComponentProvider
       config={{ ...mockConfig, papId, homeUrl: aiplHomeUrl }}
     >
-      <PizzaDemo {...args} />
+      <GreeterDemo {...args} />
     </AiplComponentProvider>
   ),
   args: {

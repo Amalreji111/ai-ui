@@ -1,6 +1,6 @@
 import { css } from "@emotion/react";
 
-export const pizzaDemoStyle = css`
+export const greeterDemoStyle = css`
   .container {
     background-color: black;
     color: white;
@@ -37,18 +37,18 @@ export const pizzaDemoStyle = css`
     position: absolute;
   }
 
-  .pizza h1 {
+  .greeter h1 {
     text-align: center;
     color: #d35400;
   }
 
-  .pizza label {
+  .greeter label {
     display: block;
     margin-top: 10px;
   }
 
-  .pizza select,
-  .pizza input {
+  .greeter select,
+  .greeter input {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
@@ -56,25 +56,25 @@ export const pizzaDemoStyle = css`
     border-radius: 5px;
   }
 
-  .pizza .radio-group {
+  .greeter .radio-group {
     display: flex;
     justify-content: space-around;
     margin-top: 5px;
   }
 
-  .pizza fieldset {
+  .greeter fieldset {
     display: flex;
     align-items: center;
     justify-content: space-around;
     border: none;
   }
-  .pizza fieldset label {
+  .greeter fieldset label {
     display: flex;
     align-items: center;
     gap: 5px;
   }
 
-  .pizza button {
+  .greeter button {
     background-color: #d35400;
     color: #fff;
     padding: 10px;
@@ -85,11 +85,11 @@ export const pizzaDemoStyle = css`
     margin-top: 20px;
   }
 
-  .pizza button:hover {
+  .greeter button:hover {
     background-color: #e67e22;
   }
 
-  .pizza .order-summary {
+  .greeter .order-summary {
     margin-top: 20px;
     padding: 10px;
     border: 1px solid #ccc;
