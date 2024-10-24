@@ -21,7 +21,8 @@
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build -o docs",
     "publish": "./scripts/changes.sh > CHANGELOG.md && ./scripts/version.sh",
-    "build-publish": "bun run build && bun run publish"
+    "build-publish": "bun run build && bun run publish",
+    "preview":"vite preview"
   },
   "keywords": [],
   "author": "Matt Taylor @mjtdev",

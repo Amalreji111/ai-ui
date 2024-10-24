@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
 
-  base: "/ai-ui",
+  base: "/ai-ui/",
   css: {
     modules: {
       scopeBehaviour: "local",
