@@ -20,7 +20,8 @@
     "start": "vite --strictPort --force --port 6129",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build -o docs",
-    "publish": "./scripts/changes.sh > CHANGELOG.md && ./scripts/version.sh"
+    "publish": "./scripts/changes.sh > CHANGELOG.md && ./scripts/version.sh",
+    "preview":"vite preview"
   },
   "keywords": [],
   "author": "Matt Taylor @mjtdev",
