@@ -25,6 +25,7 @@ import { speak } from '../../tts/speak';
 import { Ttss } from '../../tts/Ttss';
 import { useAppState } from '../../state/app/AppState';
 import { interruptTts } from '../../tts/custom/interruptTts';
+import useTranscription from './hooks/transcription';
 // width: 100%;
 const Container = styled.div`
   height: 100%;
@@ -256,37 +257,9 @@ const TypingOverlay = memo(
 );
 
 const IntelligageScreen: React.FC = memo(() => {
-  const { audioContext: ttsAudioContext, currentSource } = getTtsState();
-  const ttsSpeaking = useIsTtsSpeaking();
   const { chat, messages } = useCurrentChat();
   const { ttsEnabled } = useAppState();
-
-  const { speaking: asrSpeaking, enabled: asrEnabled } = useCustomAsrState(); // Assuming this hook manages ASR state and controls
-
-  const [transcription, setTranscription] = useState("");
-  // console.log(messages,"messages..")
-  // console.log(chat,"Chat...")
-  let realAndImaginedMessages: any[] = [];
-  if (chat) {
-    const orderedMessages = listChatMessages({
-      messageId: chat?.currentMessageId,
-      messages,
-    }).filter((n) => n.role !== "system");
-
-    const speakerMessage = asrSpeaking
-      ? AppObjects.create("chat-message", {
-          characterId: chat?.userCharacterId,
-          content: {
-            type: "text",
-            parts: [],
-          },
-        })
-      : AppObjects.create("chat-message", { characterId: chat.aiCharacterId });
-
-    realAndImaginedMessages = [...orderedMessages, speakerMessage].filter(
-      isDefined
-    );
-  }
+  const {  parseResult } = useTranscription();
 
   useEffect(() => {
     hideLoadingScreen();
@@ -295,20 +268,7 @@ const IntelligageScreen: React.FC = memo(() => {
   if (!ttsEnabled) {
     Ttss.enableTts();
   }
-  const transcript = listChatMessages({
-    messageId: chat?.currentMessageId,
-    messages,
-  })
-    .filter((n) => n.role === "assistant")
-    ?.at(-1);
-
-  let parseResult = null;
-  if (transcript) {
-    parseResult = AiFunctions.parseAiFunctionText(
-      Chats.chatMessageToText(transcript),
-      { aiFunctionPrefix: ".?" }
-    );
-  }
+  
 
   AsrCustoms.startCustomAsr();
 
