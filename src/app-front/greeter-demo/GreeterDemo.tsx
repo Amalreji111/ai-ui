@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import styled,{ keyframes } from 'styled-components';
 
 // Import your assets here
@@ -19,7 +19,7 @@ import { startHearing } from '../../asr-webkit/startHearing';
 import { stopHearing } from '../../asr-webkit/stopHearing';
 import { AsrCustoms } from '../../asr-custom/AsrCustoms';
 import { listChatMessages } from '../../chat/listChatMessages';
-import { AppObjects } from 'ai-worker-common';
+import { AiFunctions, AppObjects, Chats } from 'ai-worker-common';
 import { isDefined } from '@mjtdev/engine';
 import { speak } from '../../tts/speak';
 import { Ttss } from '../../tts/Ttss';
@@ -200,7 +200,7 @@ const Cursor = styled.span`
   animation: ${blink} 1s infinite;
 `;
 
-const TypingOverlay = ({ text, typingSpeed = 50 }: { text: string; typingSpeed?: number }) => {
+const TypingOverlay = memo(({ text, typingSpeed = 50 }: { text: string; typingSpeed?: number }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -233,9 +233,9 @@ const TypingOverlay = ({ text, typingSpeed = 50 }: { text: string; typingSpeed?:
       <Cursor>|</Cursor>
     </TypeOverlayContainer>
   );
-};
+});
 
-const IntelligageScreen: React.FC = () => {
+const IntelligageScreen: React.FC = memo(() => {
   const { audioContext: ttsAudioContext ,currentSource} = getTtsState();
   const ttsSpeaking = useIsTtsSpeaking();
   const { chat, messages } = useCurrentChat();
@@ -247,7 +247,6 @@ const IntelligageScreen: React.FC = () => {
   } = useCustomAsrState(); // Assuming this hook manages ASR state and controls
 
   const [transcription, setTranscription] = useState("");
-  console.log(asrSpeaking,"AsrSpeaking..")
   // console.log(messages,"messages..")
   // console.log(chat,"Chat...")
   let realAndImaginedMessages:any[]=[]
@@ -266,7 +265,6 @@ const IntelligageScreen: React.FC = () => {
           },
         })
       : AppObjects.create("chat-message", { characterId: chat.aiCharacterId });
-      console.log("Speaker,....",speakerMessage)
   
      realAndImaginedMessages = [...orderedMessages, speakerMessage].filter(
       isDefined
@@ -274,48 +272,26 @@ const IntelligageScreen: React.FC = () => {
   
   }
 
-  console.log("Real Chats",realAndImaginedMessages)
-  
-
-  // Listen for ASR events and handle transcription
-  AppEvents.useEventListener(
-    "asrUtterance",
-    (evt) => {
-      console.log("asrUtterance");
-      if (!chat) {
-        console.log("NO CHAT");
-        return;
-      }
-      ChatStates.addChatMessage({ chat, text: evt.detail });
-       setTranscription("");
-    },
-    [chat]
-  );
-  AppEvents.useEventListener(
-    "asrMumble",
-    (evt) => {
-      console.log("asrMumble");
-       setTranscription(evt.detail);
-    },
-    [chat]
-  );
-
-
   useEffect(() => {
     hideLoadingScreen();
     
   }, []);
 
-  useEffect(() => {
-    if (ttsSpeaking) {
-     console.log("ttsSpeaking", ttsSpeaking)
-    }
-  }, [ttsSpeaking]);
   if(!ttsEnabled){
     Ttss.enableTts();
-
   }
+  const transcript = listChatMessages({
+    messageId: chat?.currentMessageId,
+    messages,
+  }).filter((n) => n.role === 'assistant')?.at(-1);
 
+  let parseResult=null
+  if(transcript){
+     parseResult = AiFunctions.parseAiFunctionText(
+      Chats.chatMessageToText(transcript),
+      { aiFunctionPrefix: ".?" }
+    );
+  }
 
     
   AsrCustoms.startCustomAsr()
@@ -335,7 +311,7 @@ const IntelligageScreen: React.FC = () => {
         </ImageContainer>
 
         {/* <TypingOverlay text="The issue you're facing with TypeScript not recognizing the image module (Ai.png) is likely related to missing type declarations for importing non-code assets like images. TypeScript doesn't know how to handle imports of non-code files" /> */}
-        <TypingOverlay text={transcription} />
+        <TypingOverlay text={parseResult?.strippedText??''} />
         
       </Content>
 
@@ -360,6 +336,6 @@ const IntelligageScreen: React.FC = () => {
     </Frame>
 
   );
-};
+});
 
 export default IntelligageScreen;
