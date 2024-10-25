@@ -163,24 +163,24 @@ const blink = keyframes`
 `;
 
 const TypeOverlayContainer = styled.div`
-  background: black;
+  background: transparent;
   color: white;
-  padding: 12px 32px;
   min-height: 100px;
-  max-height: 200px; 
+  max-height: 200px;
   max-width: 800px;
+  width: 100%;
   font-size: 38px;
   letter-spacing: 0.2px;
   margin-top: 16px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   position: absolute;
-  bottom: 5%;
-  left: 55%;
-  transform: translate(-50%, -50%);
+  bottom: 18%;
+  left: 50%;
+  transform: translate(-50%, 0);
   overflow-y: auto;
   scrollbar-width: none; // Firefox
   -ms-overflow-style: none; // IE and Edge
-  
+
   // Hide scrollbar for Chrome/Safari
   &::-webkit-scrollbar {
     display: none;
@@ -192,70 +192,87 @@ const TypeOverlayContainer = styled.div`
 
   @media (max-width: 768px) {
     font-size: 16px;
-    padding: 10px 24px;
     max-height: 150px;
   }
 `;
+
 const Cursor = styled.span`
   animation: ${blink} 1s infinite;
 `;
 
-const TypingOverlay = memo(({ text, typingSpeed = 50 }: { text: string; typingSpeed?: number }) => {
-  const [displayedText, setDisplayedText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
+const TextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+`;
 
-  useEffect(() => {
-    // Reset when new text comes in
-    setDisplayedText('');
-    setCurrentIndex(0); 
-  }, [text]);
+const StyledText = styled.span`
+  background: rgba(0, 0, 0, 0.9);
+  text-align: center;
+  padding: 0 10px;
+`;
 
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timer = setTimeout(() => {
-        setDisplayedText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, typingSpeed);
+const TypingOverlay = memo(
+  ({ text, typingSpeed = 50 }: { text: string; typingSpeed?: number }) => {
+    const [displayedText, setDisplayedText] = useState("");
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
 
-      return () => clearTimeout(timer);
-    }
-  }, [currentIndex, text, typingSpeed]);
-  useEffect(() => {
-    if (containerRef.current) {
-      const container = containerRef.current;
-      container.scrollTop = container.scrollHeight;
-    }
-  }, [displayedText]);
-  return (
-    <TypeOverlayContainer ref={containerRef}>
-      {displayedText}
-      <Cursor>|</Cursor>
-    </TypeOverlayContainer>
-  );
-});
+    useEffect(() => {
+      // Reset when new text comes in
+      setDisplayedText("");
+      setCurrentIndex(0);
+    }, [text]);
+
+    useEffect(() => {
+      if (currentIndex < text.length) {
+        const timer = setTimeout(() => {
+          setDisplayedText((prev) => prev + text[currentIndex]);
+          setCurrentIndex((prev) => prev + 1);
+        }, typingSpeed);
+
+        return () => clearTimeout(timer);
+      }
+    }, [currentIndex, text, typingSpeed]);
+    useEffect(() => {
+      if (containerRef.current) {
+        const container = containerRef.current;
+        container.scrollTop = container.scrollHeight;
+      }
+    }, [displayedText]);
+    return (
+      <TypeOverlayContainer ref={containerRef}>
+        <TextContainer>
+          <StyledText>
+            {displayedText}
+            <Cursor>|</Cursor>
+          </StyledText>
+        </TextContainer>
+      </TypeOverlayContainer>
+    );
+  }
+);
 
 const IntelligageScreen: React.FC = memo(() => {
-  const { audioContext: ttsAudioContext ,currentSource} = getTtsState();
+  const { audioContext: ttsAudioContext, currentSource } = getTtsState();
   const ttsSpeaking = useIsTtsSpeaking();
   const { chat, messages } = useCurrentChat();
   const { ttsEnabled } = useAppState();
 
-  const {
-    speaking: asrSpeaking,
-    enabled: asrEnabled,
-  } = useCustomAsrState(); // Assuming this hook manages ASR state and controls
+  const { speaking: asrSpeaking, enabled: asrEnabled } = useCustomAsrState(); // Assuming this hook manages ASR state and controls
 
   const [transcription, setTranscription] = useState("");
   // console.log(messages,"messages..")
   // console.log(chat,"Chat...")
-  let realAndImaginedMessages:any[]=[]
-  if(chat){
+  let realAndImaginedMessages: any[] = [];
+  if (chat) {
     const orderedMessages = listChatMessages({
       messageId: chat?.currentMessageId,
       messages,
     }).filter((n) => n.role !== "system");
-  
+
     const speakerMessage = asrSpeaking
       ? AppObjects.create("chat-message", {
           characterId: chat?.userCharacterId,
@@ -265,76 +282,72 @@ const IntelligageScreen: React.FC = memo(() => {
           },
         })
       : AppObjects.create("chat-message", { characterId: chat.aiCharacterId });
-  
-     realAndImaginedMessages = [...orderedMessages, speakerMessage].filter(
+
+    realAndImaginedMessages = [...orderedMessages, speakerMessage].filter(
       isDefined
     );
-  
   }
 
   useEffect(() => {
     hideLoadingScreen();
-    
   }, []);
 
-  if(!ttsEnabled){
+  if (!ttsEnabled) {
     Ttss.enableTts();
   }
   const transcript = listChatMessages({
     messageId: chat?.currentMessageId,
     messages,
-  }).filter((n) => n.role === 'assistant')?.at(-1);
+  })
+    .filter((n) => n.role === "assistant")
+    ?.at(-1);
 
-  let parseResult=null
-  if(transcript){
-     parseResult = AiFunctions.parseAiFunctionText(
+  let parseResult = null;
+  if (transcript) {
+    parseResult = AiFunctions.parseAiFunctionText(
       Chats.chatMessageToText(transcript),
       { aiFunctionPrefix: ".?" }
     );
   }
 
-    
-  AsrCustoms.startCustomAsr()
+  AsrCustoms.startCustomAsr();
 
   return (
     <Frame>
+      <Container>
+        <WaveAnimation>
+          <img src={waveImage} alt="Wave Animation" />
+        </WaveAnimation>
 
-    <Container>
-      <WaveAnimation>
-        <img src={waveImage} alt="Wave Animation" />
-      </WaveAnimation>
+        <Content style={{ position: "relative" }}>
+          <ImageContainer>
+            <AssistantImage src={girlImage} alt="AI Assistant" />
+            <Overlay></Overlay>
+          </ImageContainer>
 
-      <Content style={{position: "relative"}}>
-        <ImageContainer>
-          <AssistantImage src={girlImage} alt="AI Assistant" />
-        <Overlay></Overlay>
-        </ImageContainer>
+          {/* <TypingOverlay text="The issue you're facing with TypeScript not recognizing the image module (Ai.png) is likely related to missing type declarations for importing non-code assets like images. TypeScript doesn't know how to handle imports of non-code files" /> */}
+          <TypingOverlay text={parseResult?.strippedText ?? ""} />
+        </Content>
 
-        {/* <TypingOverlay text="The issue you're facing with TypeScript not recognizing the image module (Ai.png) is likely related to missing type declarations for importing non-code assets like images. TypeScript doesn't know how to handle imports of non-code files" /> */}
-        <TypingOverlay text={parseResult?.strippedText??''} />
-        
-      </Content>
+        <Footer>
+          <LogoContainer>
+            <img src={intelliageImage} alt="Intelligage" />
+          </LogoContainer>
 
-      <Footer>
-        <LogoContainer>
-          <img src={intelliageImage} alt="Intelligage" />
-
-        </LogoContainer>
-
-        <QRContainer>
-          <QRCode src={qrCodeImage} alt="QR Code" />
-          <QRText>
-            Scan to continue on<br />your phone
-          </QRText>
-        </QRContainer>
-      </Footer>
-      {/* {
+          <QRContainer>
+            <QRCode src={qrCodeImage} alt="QR Code" />
+            <QRText>
+              Scan to continue on
+              <br />
+              your phone
+            </QRText>
+          </QRContainer>
+        </Footer>
+        {/* {
         chat? <ChatTextEntry chat={chat} />: null
       } */}
-
-    </Container>
+      </Container>
     </Frame>
-
   );
 });
 
