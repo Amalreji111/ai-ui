@@ -74,13 +74,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@lunapaint/png-codec": "^0.2.0",
-<<<<<<< HEAD
-    "@mjtdev/engine": "https://github.com/matthewjosephtaylor/mjtdev-engine#2024.10.25-1350",
-    "ai-worker-common": "https://github.com/AIPL-labs/ai-worker-common#2024.10.28-1208",
-    "@mjtdev/avatar-3d": "https://github.com/matthewjosephtaylor/avatar-3d#2024.10.28-0933",
-=======
     "@mjtdev/avatar-3d": "https://github.com/matthewjosephtaylor/avatar-3d#2024.10.25-1419",
->>>>>>> d27ce55 (Facedetection implementation try one)
     "@monaco-editor/react": "^4.6.0",
     "@mui/material": "^6.0.1",
     "@radix-ui/react-collapsible": "^1.1.1",

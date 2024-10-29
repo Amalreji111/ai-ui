@@ -46,14 +46,16 @@ export default defineConfig({
     // __APP_FRONT__: JSON.stringify("power-user"),
 
     // AI-UI Production settings
-    __HOME_BASE__: JSON.stringify("https://ai-worker.intelligage.workers.dev"),
+    // __HOME_BASE__: JSON.stringify("https://ai-worker.intelligage.workers.dev"),
+    __HOME_BASE__: JSON.stringify("https://ai-worker.mjtdev.workers.dev"),
     // __PAP_ID__: JSON.stringify(
     //   "access-point-1725571260862-23455f95-1253-4dfe-96e3-952ac6af647c"
     // ),
     // __APP_FRONT__: JSON.stringify("pizza-demo"),
 
     //Greeter project config
-    __PAP_ID__:JSON.stringify("access-point-1729798916406-965d156a-2242-44af-9a4a-7e38de595a1f"),
+    __PAP_ID__:JSON.stringify("access-point-1730138425212-a96c9489-58c9-42ba-9cb4-a85e230bb408"),
+    // __PAP_ID__:JSON.stringify("access-point-1729798916406-965d156a-2242-44af-9a4a-7e38de595a1f"),
     __APP_FRONT__: JSON.stringify("greeter-demo"),
 
     // AI-Workfroce Production settings

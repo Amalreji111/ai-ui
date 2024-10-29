@@ -1,7 +1,4 @@
 import { Avatar3dGltf } from "@mjtdev/avatar-3d";
-<<<<<<< HEAD
-import { Colors, Objects, isDefined, type ByteLike } from "@mjtdev/engine";
-=======
 import {
   Bytes,
   Colors,
@@ -9,17 +6,11 @@ import {
   isDefined,
   type ByteLike,
 } from "@mjtdev/engine";
->>>>>>> d27ce55 (Facedetection implementation try one)
 import { Badge, Card, Flex, Separator, Text } from "@radix-ui/themes";
 import type { AppCharacter } from "ai-worker-common";
 import { AnimatePresence, motion } from "framer-motion";
 import type { CSSProperties } from "react";
-<<<<<<< HEAD
-import { memo, useState } from "react";
-import { useTtsState } from "../../tts/TtsState";
-=======
 import { memo, useEffect, useState } from "react";
->>>>>>> d27ce55 (Facedetection implementation try one)
 import { DEFAULT_CHAR_URL } from "../DEFAULT_CHAR_URL";
 import { stringifyEq } from "../chat/stringifyEq";
 import { AppButtonGroup } from "../common/AppButtonGroup";
@@ -73,10 +64,6 @@ export const CharacterAvatar = memo(
   }) => {
     const [pointerOver, setPointerOver] = useState(false);
     const [videoEnded, setVideoEnded] = useState(false);
-<<<<<<< HEAD
-    const { analyserNode } = useTtsState();
-
-=======
     const [avatar3dFile, setAvatar3dFile] = useState<File | undefined>();
     const { analyserNode } = useTtsState();
 
@@ -90,7 +77,6 @@ export const CharacterAvatar = memo(
       setAvatar3dFile(file);
     }, [avatar3d]);
 
->>>>>>> d27ce55 (Facedetection implementation try one)
     const backgroundColor = Colors.from("black").alpha(0.5).toString();
     const nameDisplay = showName ? (
       <Text style={{ ...nameStyle }}>{character?.card?.data?.name}</Text>
@@ -200,18 +186,10 @@ export const CharacterAvatar = memo(
                     exit={{ opacity: 0, transition: { duration: 0.1 } }}
                     key="greeting-image-active-motion"
                   >
-<<<<<<< HEAD
-                    {show3dAvatar &&
-                    character.card.data.extensions?.avatar3dUrl ? (
-                      <Flex style={{ maxHeight: "40vh", overflow: "auto" }}>
-                        <Avatar3dGltf
-                          path={character.card.data.extensions.avatar3dUrl}
-=======
                     {avatar3dFile ? (
                       <Flex style={{ maxHeight: "40vh", overflow: "auto" }}>
                         <Avatar3dGltf
                           path={avatar3dFile}
->>>>>>> d27ce55 (Facedetection implementation try one)
                           analyserNode={analyserNode}
                           // showPhonemes={true}
                           // showControls={true}

@@ -27,7 +27,7 @@ import { useAppState } from '../../state/app/AppState';
 import { interruptTts } from '../../tts/custom/interruptTts';
 import useTranscription from './hooks/transcription';
 import { DataObjectStates, useChildDataObjects } from '../../state/data-object/DataObjectStates';
-import { CharacterAvatar } from '../../ui/character/CharacterAvatarV0';
+import { CharacterAvatar } from '../../ui/character/CharacterAvatar';
 import { speakLineBrowser, speakLinesBrowser } from '../../tts/speakLineBrowser';
 import { useUserState } from '../../state/user/UserState';
 import { useAvailableVoices } from '../../ui/useAvailableVoices';
@@ -77,9 +77,13 @@ const Content = styled.div`
 `;
 
 const ImageContainer = styled.div`
-  position: relative; /* Changed from absolute */
+  position: absolute; /* Changed from absolute */
   width: 100%;
   height: auto;
+  top:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   margin-bottom: 2%; /* Spacing between image and footer */
   
   @media (max-width: 768px) {
@@ -87,10 +91,12 @@ const ImageContainer = styled.div`
   }
 `;
 
-const AssistantImage = styled.img`
-  object-fit: cover;
-  position: relative;
+const AssistantImage = styled.div`
+  position: absolute;
   width: 100%;
+
+  top:-100%;
+  left:0;
   height: auto;
 `;
 
@@ -289,9 +295,14 @@ const IntelligageScreen: React.FC = memo(() => {
         <CharacterAvatar
           hoverActions={["Chat With {char}"]}
           showHoverButtons={false}
-          imageStyle={{ maxHeight: "4em" }}
-          character={character}
+          imageStyle={{
+            objectFit: 'cover',
+            width: "100%",
+            height: "100%"
+           }}
+          character={aiChar}
           showName={false}
+          show3dAvatar={true}
           showContextMenu={false}
           enableDocumentDrop={false}
         />
@@ -306,9 +317,6 @@ const IntelligageScreen: React.FC = memo(() => {
       //   }
       // }, [attentionState.hasGreeted]);
       
-  useEffect(() => {
-    // hideLoadingScreen();
-  }, []);
   
   if (!ttsEnabled) {
     Ttss.enableTts();
@@ -329,10 +337,12 @@ const IntelligageScreen: React.FC = memo(() => {
         </WaveAnimation>
 
         <Content style={{ position: "relative" }}>
-          <ImageContainer>
-            <AssistantImage src={girlImage} alt="AI Assistant" />
-            {/* {avatar} */}
-            <Overlay></Overlay>
+          <ImageContainer >
+            {/* <AssistantImage src={girlImage} alt="AI Assistant" /> */}
+            {/* <AssistantImage> */}
+            {avatar}
+            {/* </AssistantImage> */}
+            {/* <Overlay></Overlay> */}
           </ImageContainer>
 
           {/* <TypingOverlay text="The issue you're facing with TypeScript not recognizing the image module (Ai.png) is likely related to missing type declarations for importing non-code assets like images. TypeScript doesn't know how to handle imports of non-code files" /> */}
