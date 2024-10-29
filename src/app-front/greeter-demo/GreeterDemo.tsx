@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import styled,{ keyframes } from 'styled-components';
 
 // Import your assets here
@@ -11,7 +11,7 @@ import { useIsTtsSpeaking } from '../../tts/useIsTtsSpeaking';
 import { getTtsState } from '../../tts/TtsState';
 import { ChatTextEntry } from '../../ui/chat/entry/ChatTextEntry';
 import { useCurrentChat } from '../../ui/chat/useCurrentChat';
-import { useCustomAsrState } from '../../asr-custom/updateCustomAsrState';
+import { getCustomAsrState, useCustomAsrState } from '../../asr-custom/updateCustomAsrState';
 import { ChatStates } from '../../state/chat/ChatStates';
 import { AppEvents } from '../../event/AppEvents';
 import { AppTextAreaRef } from '../../ui/common/AppTextArea';
@@ -26,6 +26,13 @@ import { Ttss } from '../../tts/Ttss';
 import { useAppState } from '../../state/app/AppState';
 import { interruptTts } from '../../tts/custom/interruptTts';
 import useTranscription from './hooks/transcription';
+import { DataObjectStates, useChildDataObjects } from '../../state/data-object/DataObjectStates';
+import { CharacterAvatar } from '../../ui/character/CharacterAvatarV0';
+import { speakLineBrowser, speakLinesBrowser } from '../../tts/speakLineBrowser';
+import { useUserState } from '../../state/user/UserState';
+import { useAvailableVoices } from '../../ui/useAvailableVoices';
+import useFaceDetection from './hooks/faceDetection';
+import useScreenAttention from './hooks/screenAttention';
 // width: 100%;
 const Container = styled.div`
   height: 100%;
@@ -260,15 +267,57 @@ const IntelligageScreen: React.FC = memo(() => {
   const { chat, messages } = useCurrentChat();
   const { ttsEnabled } = useAppState();
   const {  parseResult } = useTranscription();
+  const characters = DataObjectStates.useDataObjectsById<"app-character">(
+    [chat?.aiCharacterId, chat?.userCharacterId].filter(isDefined)
 
+  )
+  const {
+    videoRef,
+    isLoading,
+    error,
+    faceDetected,
+    isLookingAtScreen,
+    faceAttributes,
+  } = useFaceDetection();
+  const attentionState = useScreenAttention(isLookingAtScreen)
+  let previousAttentionState = false;
+  const aiChar = chat?.aiCharacterId?characters.find(x=>x.id===chat.aiCharacterId):undefined
+  const character=chat?.userCharacterId
+      ? characters.find(x=>x.id===chat.userCharacterId)
+      : undefined;
+      const avatar = character ? (
+        <CharacterAvatar
+          hoverActions={["Chat With {char}"]}
+          showHoverButtons={false}
+          imageStyle={{ maxHeight: "4em" }}
+          character={character}
+          showName={false}
+          showContextMenu={false}
+          enableDocumentDrop={false}
+        />
+      ) : undefined;
+  
+      // const lookingAtScreen=useMemo(()=>isLookingAtScreen,[isLookingAtScreen])
+    
+      // console.log("attentionState,",attentionState)
+      // useEffect(() => {
+      //   if (attentionState.hasGreeted === false) {
+      //     ChatStates.addChatMessage({ chat, text: "Hi" });
+      //   }
+      // }, [attentionState.hasGreeted]);
+      
   useEffect(() => {
-    hideLoadingScreen();
+    // hideLoadingScreen();
   }, []);
-
+  
   if (!ttsEnabled) {
     Ttss.enableTts();
   }
-  
+  // speak({
+  //   text:"Hey there!",
+    
+  // })
+
 
   AsrCustoms.startCustomAsr();
 
@@ -282,13 +331,29 @@ const IntelligageScreen: React.FC = memo(() => {
         <Content style={{ position: "relative" }}>
           <ImageContainer>
             <AssistantImage src={girlImage} alt="AI Assistant" />
+            {/* {avatar} */}
             <Overlay></Overlay>
           </ImageContainer>
 
           {/* <TypingOverlay text="The issue you're facing with TypeScript not recognizing the image module (Ai.png) is likely related to missing type declarations for importing non-code assets like images. TypeScript doesn't know how to handle imports of non-code files" /> */}
           <TypingOverlay text={parseResult?.strippedText ?? ""} />
         </Content>
-
+        <video 
+        ref={videoRef}
+        autoPlay 
+        playsInline
+        muted
+        style={{ 
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '1px',
+          height: '1px',
+          opacity: 0,
+          pointerEvents: 'none',
+        }}
+      />
+            {isLookingAtScreen && <div>Looking at the screen!</div>}
         <Footer>
           <LogoContainer>
             <img src={intelliageImage} alt="Intelligage" />

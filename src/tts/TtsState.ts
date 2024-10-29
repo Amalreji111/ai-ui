@@ -8,4 +8,8 @@ export const [useTtsState, updateTtsState, getTtsState] = createState({
   lastText: undefined as string | undefined,
   audioContext: undefined as undefined | AudioContext,
   analyserNode: undefined as undefined | AnalyserNode,
+<<<<<<< HEAD
+=======
+
+>>>>>>> d27ce55 (Facedetection implementation try one)
 });
