@@ -21,13 +21,26 @@ jobs:
 
       - name: Install Bun
         run: |
-          npm install -g bun
+          curl -fsSL https://bun.sh/install | bash
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+      
+      - name: Cache Bun dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.bun/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: bun install
       
       - name: Build project
         run: bun run build
+
+      - name: List dist directory contents
+        run: ls -R ./dist
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v3
