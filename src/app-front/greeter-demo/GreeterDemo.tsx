@@ -285,7 +285,7 @@ const IntelligageScreen: React.FC = memo(() => {
     isLookingAtScreen,
     faceAttributes,
   } = useFaceDetection();
-  const attentionState = useScreenAttention(isLookingAtScreen)
+  const attentionState = useScreenAttention(faceDetected)
   let previousAttentionState = false;
   const aiChar = chat?.aiCharacterId?characters.find(x=>x.id===chat.aiCharacterId):undefined
   const character=chat?.userCharacterId
