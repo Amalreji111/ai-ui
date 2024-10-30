@@ -34,6 +34,10 @@ import { useAvailableVoices } from '../../ui/useAvailableVoices';
 import useFaceDetection from './hooks/faceDetection';
 import useScreenAttention from './hooks/screenAttention';
 // width: 100%;
+interface StatusDotProps {
+  status: 'online' | 'offline';
+}
+
 const Container = styled.div`
   height: 100%;
   background: linear-gradient(180deg, #5046E5 0%, #3832A0 50%, #000000 100%); /* Gradient flows from top to bottom, dark at footer */
@@ -227,6 +231,19 @@ const StyledText = styled.span`
   text-align: center;
   padding: 0 10px;
 `;
+const StatusDot =  styled.div<StatusDotProps>`
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: ${({ status }) => (status === 'online' ? 'green' : 'red')};
+`;
+interface StatusIndicatorProps {
+  isOnline: boolean;
+}
+
+const StatusIndicator: React.FC<StatusIndicatorProps> = ({ isOnline }) => (
+  <StatusDot status={isOnline ? 'online' : 'offline'} />
+);
 
 const TypingOverlay = memo(
   ({ text, typingSpeed = 50 }: { text: string; typingSpeed?: number }) => {
@@ -310,7 +327,6 @@ const IntelligageScreen: React.FC = memo(() => {
   
       // const lookingAtScreen=useMemo(()=>isLookingAtScreen,[isLookingAtScreen])
     
-      // console.log("attentionState,",attentionState)
       // useEffect(() => {
       //   if (attentionState.hasGreeted === false) {
       //     ChatStates.addChatMessage({ chat, text: "Hi" });
@@ -321,6 +337,7 @@ const IntelligageScreen: React.FC = memo(() => {
   if (!ttsEnabled) {
     Ttss.enableTts();
   }
+  
   // speak({
   //   text:"Hey there!",
     
@@ -337,6 +354,8 @@ const IntelligageScreen: React.FC = memo(() => {
         </WaveAnimation>
 
         <Content style={{ position: "relative" }}>
+        <StatusIndicator isOnline={isLookingAtScreen}/>
+
           <ImageContainer >
             {/* <AssistantImage src={girlImage} alt="AI Assistant" /> */}
             {/* <AssistantImage> */}
@@ -354,7 +373,7 @@ const IntelligageScreen: React.FC = memo(() => {
         playsInline
         muted
         style={{ 
-          position: 'fixed',
+          position: 'absolute',
           top: 0,
           left: 0,
           width: '1px',

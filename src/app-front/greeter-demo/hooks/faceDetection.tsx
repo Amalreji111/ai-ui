@@ -8,6 +8,8 @@ const useFaceDetection = () => {
   const [faceDetected, setFaceDetected] = useState<boolean>(false);
   const [isLookingAtScreen, setIsLookingAtScreen] = useState<boolean>(false);
   const [faceAttributes, setFaceAttributes] = useState<any>(null);
+  const [stableFaceDetected, setStableFaceDetected] = useState<boolean>(false); // New debounced state
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null); // Reference for debounce timeout
 
   // Constants for gaze detection
   const ROTATION_THRESHOLD = 15;
@@ -21,19 +23,19 @@ const useFaceDetection = () => {
     const eyeVector = {
       x: rightEye.x - leftEye.x,
       y: rightEye.y - leftEye.y,
-      z: 0
+      z: 0,
     };
     
     const noseVector = {
       x: nose.x - leftEye.x,
       y: nose.y - leftEye.y,
-      z: 0
+      z: 0,
     };
     
     const normalVector = {
       x: eyeVector.y * noseVector.z - eyeVector.z * noseVector.y,
       y: eyeVector.z * noseVector.x - eyeVector.x * noseVector.z,
-      z: eyeVector.x * noseVector.y - eyeVector.y * noseVector.x
+      z: eyeVector.x * noseVector.y - eyeVector.y * noseVector.x,
     };
     
     const dotProduct = normalVector.x * NORMAL_VECTOR.x + 
@@ -100,7 +102,7 @@ const useFaceDetection = () => {
           .then((stream) => {
             if (videoRef.current) {
               videoRef.current.srcObject = stream;
-              videoRef.current.play(); // Explicitly call play()
+              videoRef.current.play();
               videoRef.current.onloadeddata = () => {
                 processVideo();
               };
@@ -118,7 +120,6 @@ const useFaceDetection = () => {
       const video = videoRef.current;
 
       if (video) {
-        // Create an offscreen canvas for processing
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -168,12 +169,29 @@ const useFaceDetection = () => {
     };
   }, []);
 
+  // Debounce effect for faceDetected
+  useEffect(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      setStableFaceDetected(faceDetected);
+    }, 500); // Adjust debounce duration as needed
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [faceDetected]);
+
   return {
     videoRef,
     isLoading,
     error,
-    faceDetected,
-    isLookingAtScreen,
+    faceDetected, // Use debounced value for stable status
+    isLookingAtScreen:stableFaceDetected,
     faceAttributes,
   };
 };
