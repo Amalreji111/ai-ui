@@ -336,6 +336,8 @@ const IntelligageScreen: React.FC = memo(() => {
   
   if (!ttsEnabled) {
     Ttss.enableTts();
+    Ttss.disableTts();
+    Ttss.enableTts();
   }
   
   // speak({
@@ -344,6 +346,8 @@ const IntelligageScreen: React.FC = memo(() => {
   // })
 
 
+  AsrCustoms.startCustomAsr();
+  AsrCustoms.stopVadAsr();
   AsrCustoms.startCustomAsr();
 
   return (
