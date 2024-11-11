@@ -5,7 +5,7 @@ import GreeterDemo from "./GreeterDemo";
 import { greeterDemoConfig } from "./greeterDemoConfig";
 import { Theme } from "@radix-ui/themes";
 
-export const GreeterDemoFront = () => {
+ const AiUiScreen= () => {
   useEffect(() => {
     hideLoadingScreen();
   }, []);
@@ -19,3 +19,7 @@ export const GreeterDemoFront = () => {
     </AiplComponentProvider>
   );
 };
+
+export {
+  AiUiScreen
+}

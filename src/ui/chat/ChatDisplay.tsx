@@ -62,12 +62,12 @@ export const ChatDisplay = memo(
         }}
         key={`chat-display-motion-${chat.id}`}
       >
-        <ChatMessagesDisplay
-          characters={characters}
-          chatId={chat.id}
-          messages={realAndImaginedMessages}
-          enableControls={enableControls}
-        />
+          <ChatMessagesDisplay
+            characters={characters}
+            chatId={chat.id}
+            messages={realAndImaginedMessages}
+            enableControls={enableControls}
+          />
       </motion.div>
     );
   },

@@ -5,11 +5,13 @@ import { PowerUserSpa } from "../ui/Spa";
 import { PizzaDemoFront } from "./pizza-demo/PizzaDemoFront";
 import ChatInterface from "./greeter-demo/GreeterDemo";
 import { GreeterDemoFront } from "./greeter-demo/GreeterDemoFront";
+import { AiUiScreen } from "./ai-ui-chat/GreeterDemoFront";
 
 export const APP_FRONTS: Record<string, ReactChild> = {
   "power-user": <PowerUserSpa />,
   playground: <PlaygroundSpa />,
   overlay: <OverlaySpa />,
   "pizza-demo": <PizzaDemoFront />,
-  "greeter-demo":<GreeterDemoFront />
+  "greeter-demo":<GreeterDemoFront />,
+  "ai-ui-chat":<AiUiScreen/>
 } as const;
